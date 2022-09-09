@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1090215232619",
+    "project_id": "squirrel-84cdc",
+    "storage_bucket": "squirrel-84cdc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090215232619:android:70b635df8dc672c74c5d2e",
+        "android_client_info": {
+          "package_name": "com.example.squirrel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090215232619-30a0l620airqajk3lfuh7sgihkvao6gv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS1xllDAxGg3Ym6lH905bPwYcPKJeGg-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090215232619-30a0l620airqajk3lfuh7sgihkvao6gv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
