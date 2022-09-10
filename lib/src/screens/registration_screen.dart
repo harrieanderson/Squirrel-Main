@@ -25,11 +25,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _firstNameEditingController = TextEditingController();
-  final _secondNameEditingController = new TextEditingController();
-  final emailEditingController = new TextEditingController();
-  final passwordEditingController = new TextEditingController();
-  final confirmPasswordEditingController = new TextEditingController();
-  final bioEditingController = new TextEditingController();
+  final _secondNameEditingController = TextEditingController();
+  final emailEditingController = TextEditingController();
+  final passwordEditingController = TextEditingController();
+  final confirmPasswordEditingController = TextEditingController();
+  final bioEditingController = TextEditingController();
   bool _isLoading = false;
   Uint8List? _image;
 
@@ -44,7 +44,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     bioEditingController.dispose();
   }
 
-  @override
   void selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
@@ -64,7 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       controller: _firstNameEditingController,
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
-        RegExp regex = new RegExp(r'^.{3,}$');
+        RegExp regex = RegExp(r'^.{3,}$');
         if (value!.isEmpty) {
           return ("First name cannot be Empty");
         }
@@ -98,7 +97,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       controller: _secondNameEditingController,
       keyboardType: TextInputType.name,
       validator: (value) {
-        RegExp regex = new RegExp(r'^.{3,}$');
+        RegExp regex = RegExp(r'^.{3,}$');
         if (value!.isEmpty) {
           return ("Second name cannot be Empty");
         }
@@ -167,7 +166,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       controller: passwordEditingController,
       obscureText: true,
       validator: (value) {
-        RegExp regex = new RegExp(r'^.{6,}$');
+        RegExp regex = RegExp(r'^.{6,}$');
         if (value!.isEmpty) {
           return ("Password is required for login");
         }
@@ -334,45 +333,5 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
-  }
-
-  postDetailsToFireStore() async {
-    // calling our Firestore
-    //calling our user model
-    // sending these values
-
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    User user = _auth.currentUser!;
-
-    UserModel userModel = UserModel(
-        email: '',
-        firstName: '',
-        secondName: '',
-        uid: '',
-        bio: '',
-        culls: 0,
-        friends: [],
-        photoUrl: '',
-        username: '');
-
-    userModel.email = user.email!;
-    userModel.uid = user.uid;
-    userModel.firstName = _firstNameEditingController.text;
-    userModel.secondName = _secondNameEditingController.text;
-
-    await firebaseFirestore.collection('users').doc(user.uid).set(
-          userModel.toMap(),
-        );
-
-    showSnackBar(context, "Account created successfully!");
-
-    Navigator.pushAndRemoveUntil(
-        (context),
-        MaterialPageRoute(
-            builder: (context) => HomeScreen(
-                  key: UniqueKey(),
-                  currentUserId: FirebaseAuth.instance.currentUser!.uid,
-                )),
-        (route) => false);
   }
 }

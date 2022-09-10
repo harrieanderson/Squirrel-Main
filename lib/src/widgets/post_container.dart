@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:squirrel_main/models/post.dart';
 import 'package:squirrel_main/models/user.dart';
 
@@ -103,7 +102,7 @@ class _PostContainerState extends State<PostContainer> {
                     icon: Icon(Icons.thumb_up),
                   ),
                   Text(
-                    widget.post.likes.toString() + ' likes',
+                    '${widget.post.likes} likes',
                   ),
                 ],
               ),
@@ -114,7 +113,7 @@ class _PostContainerState extends State<PostContainer> {
                     icon: Icon(Icons.comment),
                   ),
                   Text(
-                    widget.post.likes.toString() + ' comments',
+                    '${widget.post.likes} comments',
                   ),
                 ],
               ),

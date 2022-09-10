@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:squirrel_main/helperfunctions/sharedpref_helper.dart';
 import 'package:squirrel_main/models/cull_model.dart';
 import 'package:squirrel_main/models/post.dart';
@@ -7,21 +8,21 @@ import 'package:squirrel_main/models/user.dart';
 import 'package:squirrel_main/utils/constant.dart';
 
 class DatabaseMethods {
-  Future addUserInfoToDB(Map<String, dynamic> userInfoMap) async {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc('username')
-        .set(userInfoMap);
+  static void updateUserInfo(UserModel user) {
+    usersRef.doc(user.uid).update({
+      'username': user.username,
+      'bio': user.bio,
+      'photoUrl': user.photoUrl
+    });
   }
 
   static Future<List<UserModel>> searchUsers(String name) async {
     final usersSnapshot = await usersRef
         .where('username', isGreaterThanOrEqualTo: name)
-        .where('username', isLessThan: name + 'z')
+        .where('username', isLessThan: '${name}z')
         .get();
 
     final list = usersSnapshot.docs.map((doc) {
-      print(' DOC DOC ${doc.data()}');
       return UserModel.fromSnap(doc);
     }).toList();
     return list;

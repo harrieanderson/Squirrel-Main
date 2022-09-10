@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
 
 import 'dart:typed_data';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:squirrel_main/models/post.dart';
@@ -9,6 +8,7 @@ import 'package:squirrel_main/models/user.dart';
 import 'package:squirrel_main/repositories/user_repository.dart';
 import 'package:squirrel_main/services/auth.dart';
 import 'package:squirrel_main/services/database.dart';
+import 'package:squirrel_main/src/screens/edit_profile_screen.dart';
 import 'package:squirrel_main/src/screens/login_screen.dart';
 import 'package:squirrel_main/src/widgets/post_container.dart';
 import 'package:squirrel_main/utils/utils.dart';
@@ -127,6 +127,39 @@ class _ProfilePageUiState extends State<ProfilePageUi> {
                         Text(userModel.bio)
                       ],
                     ),
+                    _isOwnProfilePage
+                        ? GestureDetector(
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditProfileScreen(user: userModel),
+                                ),
+                              );
+                              setState(() {});
+                            },
+                            child: Container(
+                              width: 100,
+                              height: 35,
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.blue,
+                                border: Border.all(color: Colors.blue),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Edit',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container()
                   ],
                 ),
                 if (_isOwnProfilePage)
