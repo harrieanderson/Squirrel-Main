@@ -1,28 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:squirrel/helperfunctions/sharedpref_helper.dart';
-import 'package:squirrel/models/cull_model.dart';
-import 'package:squirrel/models/post.dart';
-import 'package:squirrel/models/sighting_model.dart';
-import 'package:squirrel/models/usser_model.dart';
-import 'package:squirrel/utils/constant.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:squirrel_main/helperfunctions/sharedpref_helper.dart';
+import 'package:squirrel_main/models/cull_model.dart';
+import 'package:squirrel_main/models/post.dart';
+import 'package:squirrel_main/models/sighting_model.dart';
+import 'package:squirrel_main/models/user.dart';
+import 'package:squirrel_main/utils/constant.dart';
 
 class DatabaseMethods {
-  Future addUserInfoToDB(Map<String, dynamic> userInfoMap) async {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc('username')
-        .set(userInfoMap);
+  static void updateUserInfo(UserModel user) {
+    usersRef.doc(user.uid).update({
+      'username': user.username,
+      'bio': user.bio,
+      'photoUrl': user.photoUrl
+    });
   }
 
   static Future<List<UserModel>> searchUsers(String name) async {
     final usersSnapshot = await usersRef
         .where('username', isGreaterThanOrEqualTo: name)
-        .where('username', isLessThan: name + 'z')
+        .where('username', isLessThan: '${name}z')
         .get();
 
     final list = usersSnapshot.docs.map((doc) {
-      print(' DOC DOC ${doc.data()}');
-      return UserModel.fromDoc(doc);
+      return UserModel.fromSnap(doc);
     }).toList();
     return list;
   }
@@ -89,18 +90,6 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  static void createPost(Post post) {
-    postsRef.doc(post.authorId).set({'postTime': post.timestamp});
-    postsRef.doc(post.authorId).collection("userPosts").add({
-      // "username": post.username,
-      "text": post.text,
-      "image": post.image,
-      "authorId": post.authorId,
-      "timestamp": post.timestamp,
-      "likes": post.likes
-    });
-  }
-
   static void addCull(Cull cull) {
     cullsRef.doc(cull.uid).set({'cullTime': cull.timestamp});
     cullsRef.doc(cull.uid).collection("userCulls").add({
@@ -121,10 +110,41 @@ class DatabaseMethods {
     });
   }
 
-  static Future<List<Post>> getUserPosts(String userId) async {
+  Future<QuerySnapshot> getUserInfo(String username) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .where("username", isGreaterThanOrEqualTo: username)
+        .get();
+  }
+
+  static void createPost(Post post) {
+    postsRef.doc(post.authorId).set({'postTime': post.timestamp});
+    postsRef.doc(post.authorId).collection("userPosts").add({
+      "text": post.text,
+      "image": post.image,
+      "authorId": post.authorId,
+      "timestamp": post.timestamp,
+      "likes": post.likes
+    }).then((doc) async {
+      QuerySnapshot homeSnapshot =
+          await postsRef.doc(post.authorId).collection('userPosts').get();
+
+      for (var docSnapshot in homeSnapshot.docs) {
+        feedRefs.doc(docSnapshot.id).collection('userFeed').doc(doc.id).set({
+          "text": post.text,
+          "image": post.image,
+          "authorId": post.authorId,
+          "timestamp": post.timestamp,
+          "likes": post.likes
+        });
+      }
+    });
+  }
+
+  static Future<List<Post>> getUserPosts(String currentUserId) async {
     QuerySnapshot userPostsSnap = await postsRef
-        .doc(userId)
-        .collection('posts')
+        .doc(currentUserId)
+        .collection('userPosts')
         .orderBy('timestamp', descending: true)
         .get();
     List<Post> userPosts =
@@ -132,20 +152,15 @@ class DatabaseMethods {
     return userPosts;
   }
 
-  static Future<List<Post>> getHomeScreenPosts(String userId) async {
-    QuerySnapshot homePosts = await postsRef
-        .doc(userId)
-        .collection('posts')
+  static Future<List> getHomeScreenPosts(String currentUserId) async {
+    QuerySnapshot homePosts = await feedRefs
+        .doc(currentUserId)
+        .collection('userFeed')
         .orderBy('timestamp', descending: true)
         .get();
-    List<Post> posts = homePosts.docs.map((doc) => Post.fromDoc(doc)).toList();
-    return posts;
-  }
+    List<Post> homeScreenPosts =
+        homePosts.docs.map((doc) => Post.fromDoc(doc)).toList();
 
-  Future<QuerySnapshot> getUserInfo(String username) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .where("username", isGreaterThanOrEqualTo: username)
-        .get();
+    return homeScreenPosts;
   }
 }

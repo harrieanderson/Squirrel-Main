@@ -1,9 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
-  // String username;
+  String id;
   String authorId;
   String text;
   String image;
@@ -11,7 +9,7 @@ class Post {
   int likes;
 
   Post({
-    // required this.username,
+    required this.id,
     required this.authorId,
     required this.text,
     required this.image,
@@ -21,7 +19,7 @@ class Post {
 
   factory Post.fromDoc(DocumentSnapshot doc) {
     return Post(
-      // username: doc.id,
+      id: doc.id,
       authorId: doc['authorId'],
       text: doc['text'],
       image: doc['image'],

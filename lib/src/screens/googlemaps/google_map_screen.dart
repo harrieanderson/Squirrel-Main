@@ -5,12 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:squirrel/models/cull_model.dart';
-import 'package:squirrel/models/sighting_model.dart';
-import 'package:squirrel/services/database.dart';
-import 'package:squirrel/src/screens/googlemaps/position_services.dart';
-import 'package:squirrel/src/widgets/PostContainer.dart';
-import 'package:squirrel/utils/utils.dart';
+import 'package:squirrel_main/models/cull_model.dart';
+import 'package:squirrel_main/models/sighting_model.dart';
+import 'package:squirrel_main/services/database.dart';
+import 'package:squirrel_main/src/screens/googlemaps/position_services.dart';
+import 'package:squirrel_main/utils/utils.dart';
 
 class GoogleMapScreen extends StatefulWidget {
   final String uid;
@@ -40,6 +39,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   Future<String> promptForGender(context) async {
     return await showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Select Gender'),

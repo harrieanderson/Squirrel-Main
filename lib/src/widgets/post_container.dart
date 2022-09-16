@@ -38,9 +38,6 @@ class _PostContainerState extends State<PostContainer> {
                   widget.author.photoUrl,
                 ),
               ),
-              // SizedBox(
-              //   width: 2,
-              // ),
               Column(
                 children: [
                   Text(
@@ -80,7 +77,7 @@ class _PostContainerState extends State<PostContainer> {
                     Container(
                       height: 250,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: NetworkImage(widget.post.image),
