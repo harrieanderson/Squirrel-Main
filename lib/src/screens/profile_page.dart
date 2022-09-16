@@ -1,27 +1,25 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:typed_data';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:squirrel_main/models/post.dart';
-import 'package:squirrel_main/models/user.dart';
-import 'package:squirrel_main/repositories/user_repository.dart';
-import 'package:squirrel_main/services/auth.dart';
-import 'package:squirrel_main/services/database.dart';
-import 'package:squirrel_main/src/screens/edit_profile_screen.dart';
-import 'package:squirrel_main/src/screens/login_screen.dart';
-import 'package:squirrel_main/src/widgets/post_container.dart';
-import 'package:squirrel_main/utils/utils.dart';
+import 'package:squirrel/models/post.dart';
+import 'package:squirrel/models/repo.dart';
+import 'package:squirrel/models/usser_model.dart';
+import 'package:squirrel/services/database.dart';
+import 'package:squirrel/src/widgets/PostContainer.dart';
+import 'package:squirrel/utils/utils.dart';
 
 const _kAvatarRadius = 45.0;
 const _kAvatarPadding = 8.0;
 
 class ProfilePageUi extends StatefulWidget {
-  final String currentUserId;
+  final String uid;
   final String visitedUserId;
 
   const ProfilePageUi(
-      {Key? key, required this.visitedUserId, required this.currentUserId})
+      {Key? key, required this.visitedUserId, required this.uid})
       : super(key: key);
 
   @override
@@ -29,29 +27,35 @@ class ProfilePageUi extends StatefulWidget {
 }
 
 class _ProfilePageUiState extends State<ProfilePageUi> {
-  late final _isOwnProfilePage = widget.visitedUserId == widget.currentUserId;
+  late final _isOwnProfilePage = widget.visitedUserId == widget.uid;
+  Uint8List? _image;
+  UserModel? userModel;
 
   List<Post> _allPosts = [];
 
-  showProfilePosts(UserModel author) {
+  Widget showProfilePosts(UserModel author) {
     return Expanded(
       child: ListView.builder(
-          shrinkWrap: true,
-          physics: AlwaysScrollableScrollPhysics(),
-          itemCount: _allPosts.length,
-          itemBuilder: (context, index) {
-            return PostContainer(
-              post: _allPosts[index],
-              author: author,
-              currentUserId: widget.currentUserId,
-            );
-          }),
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: _allPosts.length,
+        itemBuilder: (context, index) {
+          return PostContainer(
+            post: _allPosts[index],
+            author: author,
+            currentUserId: widget.uid,
+          );
+        },
+      ),
     );
   }
 
+  @override
   void selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
-    setState(() {});
+    setState(() {
+      _image = im;
+    });
   }
 
   getAllPosts() async {
@@ -64,28 +68,16 @@ class _ProfilePageUiState extends State<ProfilePageUi> {
     }
   }
 
-  @override
   void initState() {
     super.initState();
     getAllPosts();
   }
 
-  @override
+  // gets data from Firebase
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Authenticator().signOut();
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => LoginScreen(),
-              ),
-            );
-          },
-          icon: Icon(Icons.logout),
-          color: Colors.black,
-        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -98,7 +90,7 @@ class _ProfilePageUiState extends State<ProfilePageUi> {
         ],
       ),
       body: FutureBuilder<UserModel>(
-          future: UserRepository.getUser(widget.currentUserId),
+          future: Repo.getUser(widget.uid),
           builder: (context, snapshot) {
             final userModel = snapshot.data;
 
@@ -127,39 +119,6 @@ class _ProfilePageUiState extends State<ProfilePageUi> {
                         Text(userModel.bio)
                       ],
                     ),
-                    _isOwnProfilePage
-                        ? GestureDetector(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      EditProfileScreen(user: userModel),
-                                ),
-                              );
-                              setState(() {});
-                            },
-                            child: Container(
-                              width: 100,
-                              height: 35,
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.blue,
-                                border: Border.all(color: Colors.blue),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Edit',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container()
                   ],
                 ),
                 if (_isOwnProfilePage)

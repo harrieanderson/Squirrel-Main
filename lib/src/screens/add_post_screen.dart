@@ -1,19 +1,19 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:squirrel_main/models/post.dart';
 
-import 'package:squirrel_main/models/user.dart';
-import 'package:squirrel_main/repositories/user_repository.dart';
-import 'package:squirrel_main/services/database.dart';
-import 'package:squirrel_main/services/firestore_methods.dart';
-import 'package:squirrel_main/services/storage_methods.dart';
-import 'package:squirrel_main/utils/utils.dart';
+import 'package:squirrel/models/post.dart';
+import 'package:squirrel/models/repo.dart';
+
+import 'package:squirrel/models/usser_model.dart';
+import 'package:squirrel/services/database.dart';
+import 'package:squirrel/services/firestore_methods.dart';
+import 'package:squirrel/services/storage_methods.dart';
+
+import 'package:squirrel/utils/utils.dart';
 
 class AddPostScreen extends StatefulWidget {
   final String uid;
@@ -82,6 +82,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final UserProvider userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Make a post'),
@@ -120,7 +121,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     image: image,
                     timestamp: Timestamp.fromDate(DateTime.now()),
                     likes: 0,
-                    id: '',
                   );
                   showSnackBar(context, 'posted!');
                   DatabaseMethods.createPost(post);
@@ -143,7 +143,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
               8.0,
             ),
             child: FutureBuilder<UserModel>(
-              future: UserRepository.getUser(widget.uid),
+              future: Repo.getUser(widget.uid),
               builder: (context, snapshot) {
                 final userModel = snapshot.data;
                 if (userModel == null) {

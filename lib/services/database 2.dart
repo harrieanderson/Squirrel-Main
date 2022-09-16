@@ -1,36 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:squirrel/helperfunctions/sharedpref_helper.dart';
-import 'package:squirrel/models/cull_model.dart';
 import 'package:squirrel/models/post.dart';
-import 'package:squirrel/models/sighting_model.dart';
-import 'package:squirrel/models/usser_model.dart';
 import 'package:squirrel/utils/constant.dart';
 
 class DatabaseMethods {
-  Future addUserInfoToDB(Map<String, dynamic> userInfoMap) async {
+  Future addUserInfoToDB(
+      String userId, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance
         .collection('users')
-        .doc('username')
+        .doc(userId)
         .set(userInfoMap);
   }
 
-  static Future<List<UserModel>> searchUsers(String name) async {
-    final usersSnapshot = await usersRef
-        .where('username', isGreaterThanOrEqualTo: name)
-        .where('username', isLessThan: name + 'z')
+  static Future<QuerySnapshot> searchUsers(String name) async {
+    Future<QuerySnapshot<Object>>? users = usersRef
+        .where('name', isGreaterThanOrEqualTo: name)
+        .where('name', isLessThan: name + 'z')
         .get();
 
-    final list = usersSnapshot.docs.map((doc) {
-      print(' DOC DOC ${doc.data()}');
-      return UserModel.fromDoc(doc);
-    }).toList();
-    return list;
+    return users;
   }
 
   Stream<QuerySnapshot> getUserByUsername(String username) {
     return FirebaseFirestore.instance
         .collection('users')
-        .where('username', isGreaterThanOrEqualTo: username)
+        .where('username', isEqualTo: username)
         .snapshots();
   }
 
@@ -101,45 +95,15 @@ class DatabaseMethods {
     });
   }
 
-  static void addCull(Cull cull) {
-    cullsRef.doc(cull.uid).set({'cullTime': cull.timestamp});
-    cullsRef.doc(cull.uid).collection("userCulls").add({
-      "uid": cull.uid,
-      "gender": cull.gender,
-      "timestamp": cull.timestamp,
-      "location": cull.location
-    });
-  }
-
-  static void addSighting(Sighting sighting) {
-    sightingsRef.doc(sighting.uid).set({'sightingTime': sighting.timestamp});
-    sightingsRef.doc(sighting.uid).collection("userSightings").add({
-      "uid": sighting.uid,
-      "species": sighting.colour,
-      "timestamp": sighting.timestamp,
-      "location": sighting.location
-    });
-  }
-
   static Future<List<Post>> getUserPosts(String userId) async {
     QuerySnapshot userPostsSnap = await postsRef
         .doc(userId)
-        .collection('posts')
+        .collection('userPosts')
         .orderBy('timestamp', descending: true)
         .get();
     List<Post> userPosts =
         userPostsSnap.docs.map((doc) => Post.fromDoc(doc)).toList();
     return userPosts;
-  }
-
-  static Future<List<Post>> getHomeScreenPosts(String userId) async {
-    QuerySnapshot homePosts = await postsRef
-        .doc(userId)
-        .collection('posts')
-        .orderBy('timestamp', descending: true)
-        .get();
-    List<Post> posts = homePosts.docs.map((doc) => Post.fromDoc(doc)).toList();
-    return posts;
   }
 
   Future<QuerySnapshot> getUserInfo(String username) async {

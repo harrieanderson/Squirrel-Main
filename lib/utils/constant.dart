@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:squirrel/models/sighting_model.dart';
 
 final _fireStore = FirebaseFirestore.instance;
 

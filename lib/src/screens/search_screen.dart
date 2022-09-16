@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:squirrel_main/models/user.dart';
-import 'package:squirrel_main/services/database.dart';
-import 'package:squirrel_main/src/screens/profile_page.dart';
+import 'package:squirrel/models/usser_model.dart';
+import 'package:squirrel/services/database.dart';
+
+import 'package:squirrel/src/screens/profile_page.dart';
 
 class SearchScreen extends StatefulWidget {
   final String currentUserId;
@@ -35,7 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ProfilePageUi(
-              currentUserId: widget.currentUserId,
+              uid: widget.currentUserId,
               visitedUserId: user.uid,
             ),
           ),

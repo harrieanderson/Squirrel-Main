@@ -2,11 +2,13 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:squirrel_main/src/screens/add_post_screen.dart';
-import 'package:squirrel_main/src/screens/googlemaps/google_map_screen.dart';
-import 'package:squirrel_main/src/screens/home_screen.dart';
-import 'package:squirrel_main/src/screens/messages/message.dart';
-import 'package:squirrel_main/src/screens/profile_page.dart';
+import 'package:squirrel/models/usser_model.dart';
+import 'package:squirrel/src/screens/add_post_screen.dart';
+import 'package:squirrel/src/screens/googlemaps/google_map_screen.dart';
+
+import 'package:squirrel/src/screens/home_screen.dart';
+import 'package:squirrel/src/screens/messages/message.dart';
+import 'package:squirrel/src/screens/profile_page.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({Key? key}) : super(key: key);
@@ -16,26 +18,32 @@ class NavigationScreen extends StatefulWidget {
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
+  var current_index = 0;
   final screens = [
-    HomeScreen(currentUserId: FirebaseAuth.instance.currentUser!.uid),
+    HomeScreen(
+      uid: FirebaseAuth.instance.currentUser!.uid,
+    ),
     GoogleMapScreen(
-        key: UniqueKey(), uid: FirebaseAuth.instance.currentUser!.uid),
-    // Center(
-    //   child: Text('3'),
-    // ),
+      key: UniqueKey(),
+      uid: FirebaseAuth.instance.currentUser!.uid,
+    ),
     MessagesScreen(),
     ProfilePageUi(
-        visitedUserId: FirebaseAuth.instance.currentUser!.uid,
-        currentUserId: FirebaseAuth.instance.currentUser!.uid)
+      key: UniqueKey(),
+      uid: FirebaseAuth.instance.currentUser!.uid,
+      visitedUserId: FirebaseAuth.instance.currentUser!.uid,
+    ),
   ];
-  int current_index = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: IndexedStack(
+        index: current_index,
+        children: screens,
+      ),
       floatingActionButton: current_index == 0
           ? FloatingActionButton(
-              heroTag: null,
               elevation: 3,
               onPressed: () {
                 Navigator.push(
@@ -99,10 +107,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
             ],
           ),
         ),
-      ),
-      body: IndexedStack(
-        children: screens,
-        index: current_index,
       ),
     );
   }

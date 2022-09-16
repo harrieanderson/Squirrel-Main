@@ -1,9 +1,14 @@
+import 'dart:ffi';
 import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:squirrel/models/usser_model.dart' as model;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:squirrel_main/models/user.dart' as model;
-import 'package:squirrel_main/services/storage_methods.dart';
+import 'package:squirrel/helperfunctions/sharedpref_helper.dart';
+import 'package:squirrel/services/database.dart';
+import 'package:squirrel/services/storage_methods.dart';
 
 class AuthMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -16,7 +21,7 @@ class AuthMethods {
     DocumentSnapshot documentSnapshot =
         await _firestore.collection('users').doc(currentUser.uid).get();
 
-    return model.UserModel.fromSnap(documentSnapshot);
+    return model.UserModel.fromDoc(documentSnapshot);
   }
 }
 

@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:random_string/random_string.dart';
-import 'package:squirrel_main/helperfunctions/sharedpref_helper.dart';
-import 'package:squirrel_main/services/database.dart';
+import 'package:squirrel/helperfunctions/sharedpref_helper.dart';
+import 'package:squirrel/services/database.dart';
 
 class ChatsScreen extends StatefulWidget {
   final String chatWithUsername, name;

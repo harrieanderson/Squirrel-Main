@@ -1,10 +1,10 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:squirrel_main/helperfunctions/sharedpref_helper.dart';
-import 'package:squirrel_main/services/database.dart';
-import 'package:squirrel_main/src/screens/messages/chatscreen.dart';
+import 'package:squirrel/helperfunctions/sharedpref_helper.dart';
+import 'package:squirrel/services/auth.dart';
+import 'package:squirrel/services/database.dart';
+import 'package:squirrel/src/screens/login.dart';
+import 'package:squirrel/src/screens/messages/chatscreen.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({Key? key}) : super(key: key);
@@ -65,7 +65,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     myUserName,
                   );
                 })
-            : Container();
+            : Center(
+                child: CircularProgressIndicator(),
+              );
       },
     );
   }
@@ -147,7 +149,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   getChatRooms() async {
-    chatRoomsStream = DatabaseMethods().getChatRooms();
+    chatRoomsStream = await DatabaseMethods().getChatRooms();
   }
 
   onScreenLoaded() async {
@@ -166,7 +168,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     searchController.dispose();
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -175,6 +176,30 @@ class _MessagesScreenState extends State<MessagesScreen> {
         title: Text(
           'Messages',
         ),
+        actions: [
+          InkWell(
+            onTap: () {
+              Authenticator().signOut().then(
+                (s) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              child: Icon(
+                Icons.exit_to_app,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Container(
         margin: EdgeInsets.symmetric(
@@ -295,9 +320,11 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
             child: Image.network(
               profilePicUrl,
+              height: 40,
+              width: 40,
             ),
           ),
           // ),
